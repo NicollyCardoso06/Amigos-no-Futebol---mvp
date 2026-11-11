@@ -6,7 +6,7 @@ O objetivo do sistema é facilitar o cadastro e a consulta organizada de crianç
 
 ---
 
-## 1. Tecnologias Utilizadasx
+## 1. Tecnologias Utilizadas
 
 - **Linguagem:** Python 3.12
 - **Framework Web:** Django 5.2 LTS
