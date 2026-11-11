@@ -6,10 +6,26 @@ on:
     branches: [main, revisao-tecnica-mvp]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   testes:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: amigos_no_futebol
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Baixar projeto
@@ -27,8 +43,17 @@ jobs:
           pip install coverage
 
       - name: Executar testes e medir cobertura
-      env: 
-          SECRET_KEY : ${{secrets.SECRET_KEY}}
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          DB_NAME: amigos_no_futebol
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
         run: |
-          coverage run --source=. gerenciar.py test --verbosity=2
+          coverage run --source=core manage.py test --verbosity=2
           coverage report -m
+
+      - name: Gerar relatório de cobertura
+        if: always()
+        run: coverage xml
