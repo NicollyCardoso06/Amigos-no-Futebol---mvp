@@ -128,6 +128,11 @@
     <!-- Botões de Ação Inferiores -->
     <div class="d-grid gap-2">
         {% if is_educador %}
+            <a href="{% url 'cadastro_responsavel' %}" class="btn btn-oficial-primario" aria-label="Cadastrar novo responsável">
+                <i class="bi bi-person-heart" aria-hidden="true"></i>
+                <span>Cadastrar Responsável</span>
+            </a>
+
             <!-- Botão Novo Cadastro (Exclusivo do Educador) -->
             <a href="{% url 'cadastro_aluno' %}" class="btn btn-oficial-primario" aria-label="Cadastrar novo aluno">
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>

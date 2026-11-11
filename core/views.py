@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from .models import Aluno
-from .forms import LoginForm, AlunoForm
+from .forms import LoginForm, AlunoForm, ResponsavelForm
 
 
 def login_view(request):
@@ -131,3 +131,25 @@ def alternar_status_aluno_view(request, aluno_id):
     aluno.save(update_fields=['status'])
     messages.success(request, mensagem)
     return redirect('lista_alunos')
+
+
+@login_required
+def cadastro_responsavel_view(request):
+    """
+    Cadastro de responsáveis realizado exclusivamente pelo educador.
+    """
+    if not request.user.is_educador:
+        return HttpResponseForbidden(
+            'Acesso negado. Apenas o educador pode cadastrar responsáveis.'
+        )
+
+    if request.method == 'POST':
+        form = ResponsavelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Responsável cadastrado com sucesso!')
+            return redirect('lista_alunos')
+    else:
+        form = ResponsavelForm()
+
+    return render(request, 'cadastro_responsavel.html', {'form': form})

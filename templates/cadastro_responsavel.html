@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastrar Responsável — Projeto Amigos no Futebol{% endblock %}
+
+{% block content %}
+<section class="card-projeto" aria-labelledby="titulo-cadastro">
+    <div class="cabecalho-pagina">
+        <div class="icone-redondo" aria-hidden="true">
+            <i class="bi bi-person-heart"></i>
+        </div>
+        <div>
+            <h2 id="titulo-cadastro" class="titulo-pagina">Cadastrar Responsável</h2>
+            <small class="text-muted">Preencha os dados para criar uma conta de acesso:</small>
+        </div>
+    </div>
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'cadastro_responsavel' %}" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="id_nome" class="form-label">
+                Nome completo <span class="text-danger">*</span>
+            </label>
+            {{ form.nome }}
+            {% for error in form.nome.errors %}
+                <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_email" class="form-label">
+                E-mail <span class="text-danger">*</span>
+            </label>
+            {{ form.email }}
+            {% for error in form.email.errors %}
+                <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_senha" class="form-label">
+                Senha inicial <span class="text-danger">*</span>
+            </label>
+            {{ form.senha }}
+            {% for error in form.senha.errors %}
+                <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-4">
+            <label for="id_confirmar_senha" class="form-label">
+                Confirmar senha <span class="text-danger">*</span>
+            </label>
+            {{ form.confirmar_senha }}
+            {% for error in form.confirmar_senha.errors %}
+                <div class="text-danger small mt-1" role="alert">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="caixa-info mb-4">
+            <i class="bi bi-info-circle-fill fs-5" aria-hidden="true"></i>
+            <span>O responsável utilizará o e-mail e a senha cadastrados para entrar no sistema.</span>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-oficial-primario">
+                <i class="bi bi-person-plus-fill" aria-hidden="true"></i>
+                <span>Criar Conta</span>
+            </button>
+
+            <a href="{% url 'lista_alunos' %}" class="btn btn-oficial-secundario">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                <span>Voltar</span>
+            </a>
+        </div>
+    </form>
+</section>
+{% endblock %}

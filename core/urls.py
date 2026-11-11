@@ -10,5 +10,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('alunos/', views.lista_alunos_view, name='lista_alunos'),
     path('alunos/novo/', views.cadastro_aluno_view, name='cadastro_aluno'),
+    path('responsaveis/novo/', views.cadastro_responsavel_view, name='cadastro_responsavel'),
     path('alunos/<int:aluno_id>/status/', views.alternar_status_aluno_view, name='alternar_status_aluno'),
 ]
