@@ -27,6 +27,8 @@ jobs:
           pip install coverage
 
       - name: Executar testes e medir cobertura
+      env: 
+          SECRET_KEY : ${{secrets.SECRET_KEY}}
         run: |
           coverage run manage.py test
           coverage report -m
