@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastrar Aluno — Projeto Amigos no Futebol{% endblock %}
+
+{% block content %}
+<section class="card-projeto" aria-labelledby="titulo-cadastro">
+    <!-- Cabeçalho Interno da Tela -->
+    <div class="cabecalho-pagina">
+        <div class="icone-redondo" aria-hidden="true">
+            <i class="bi bi-person-plus-fill"></i>
+        </div>
+        <div>
+            <h2 id="titulo-cadastro" class="titulo-pagina">Cadastrar Aluno</h2>
+            <small class="text-muted">Preencha os dados do aluno abaixo:</small>
+        </div>
+    </div>
+
+    <!-- Erros gerais do formulário -->
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert" aria-live="assertive">
+            <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+            <div>
+                {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Formulário de Cadastro -->
+    <form method="post" action="{% url 'cadastro_aluno' %}" novalidate>
+        {% csrf_token %}
+
+        <!-- Campo Nome do Aluno -->
+        <div class="mb-3">
+            <label for="id_nome" class="form-label d-flex align-items-center gap-2">
+                <i class="bi bi-person text-primary" aria-hidden="true"></i>
+                <span>Nome do Aluno <span class="text-danger" aria-hidden="true">*</span></span>
+            </label>
+            {{ form.nome }}
+            {% if form.nome.errors %}
+                <div class="text-danger small mt-1" role="alert">
+                    {% for error in form.nome.errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Campo Data de Nascimento -->
+        <div class="mb-3">
+            <label for="id_data_nascimento" class="form-label d-flex align-items-center gap-2">
+                <i class="bi bi-calendar-event text-primary" aria-hidden="true"></i>
+                <span>Data de Nascimento <span class="text-danger" aria-hidden="true">*</span></span>
+            </label>
+            {{ form.data_nascimento }}
+            {% if form.data_nascimento.errors %}
+                <div class="text-danger small mt-1" role="alert">
+                    {% for error in form.data_nascimento.errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Campo Responsável -->
+        <div class="mb-4">
+            <label for="id_responsavel" class="form-label d-flex align-items-center gap-2">
+                <i class="bi bi-people text-primary" aria-hidden="true"></i>
+                <span>Responsável <span class="text-danger" aria-hidden="true">*</span></span>
+            </label>
+            {{ form.responsavel }}
+            {% if form.responsavel.errors %}
+                <div class="text-danger small mt-1" role="alert">
+                    {% for error in form.responsavel.errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Indicação de Campos Obrigatórios -->
+        <div class="caixa-info mb-4">
+            <i class="bi bi-info-circle-fill fs-5" aria-hidden="true"></i>
+            <span>Campos obrigatórios são marcados com <span class="text-danger fw-bold">*</span></span>
+        </div>
+
+        <!-- Ações do Formulário -->
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-oficial-primario" aria-label="Salvar cadastro do aluno">
+                <i class="bi bi-floppy" aria-hidden="true"></i>
+                <span>Salvar Cadastro</span>
+            </button>
+            <a href="{% url 'lista_alunos' %}" class="btn btn-oficial-secundario" aria-label="Voltar para a lista de alunos">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                <span>Voltar</span>
+            </a>
+        </div>
+    </form>
+</section>
+{% endblock %}

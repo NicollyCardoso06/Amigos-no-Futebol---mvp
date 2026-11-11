@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Alunos Cadastrados — Projeto Amigos no Futebol{% endblock %}
+
+{% block content %}
+<section class="card-projeto" aria-labelledby="titulo-alunos">
+    <!-- Cabeçalho Interno da Tela -->
+    <div class="cabecalho-pagina">
+        <div class="icone-redondo" aria-hidden="true">
+            <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h2 id="titulo-alunos" class="titulo-pagina">Alunos Cadastrados</h2>
+            <small class="text-muted">
+                {% if is_educador %}
+                    Gestão geral de alunos ({{ total_alunos }} cadastrado{{ total_alunos|pluralize:"s" }})
+                {% else %}
+                    Filhos vinculados à sua conta ({{ total_alunos }})
+                {% endif %}
+            </small>
+        </div>
+    </div>
+
+    <!-- Barra de Pesquisa de Alunos (Fiel ao Protótipo da Tela 3) -->
+    <form method="get" action="{% url 'lista_alunos' %}" class="mb-3" role="search" aria-label="Pesquisar alunos">
+        <div class="input-group campo-busca-grupo">
+            <span class="input-group-text" id="icone-busca">
+                <i class="bi bi-search" aria-hidden="true"></i>
+            </span>
+            <input
+                type="text"
+                name="busca"
+                class="form-control"
+                placeholder="Buscar aluno..."
+                value="{{ termo_busca }}"
+                aria-label="Buscar aluno pelo nome"
+                aria-describedby="icone-busca"
+            >
+            {% if termo_busca %}
+                <a href="{% url 'lista_alunos' %}" class="btn btn-limpar-busca" title="Limpar busca" aria-label="Limpar busca">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </a>
+            {% endif %}
+            <button class="btn btn-busca-submit" type="submit" aria-label="Executar busca">
+                Buscar
+            </button>
+        </div>
+    </form>
+
+    <!-- Lista de Alunos -->
+    <div class="lista-alunos-container mb-4" role="region" aria-label="Listagem de alunos">
+        {% if alunos %}
+            {% for aluno in alunos %}
+                <article class="card-aluno">
+                    <div class="info-aluno-bloco">
+                        <div class="avatar-aluno" aria-hidden="true">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <h3 class="nome-aluno">{{ aluno.nome }}</h3>
+                            {% if is_educador %}
+                                <p class="responsavel-aluno">
+                                    <i class="bi bi-person-heart" aria-hidden="true"></i>
+                                    Resp.: {{ aluno.responsavel.nome }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Identificação do Status (Ativo ou Inativo) -->
+                    <div>
+                        {% if is_educador %}
+                            <!-- Educador pode clicar para alternar o status -->
+                            <form method="post" action="{% url 'alternar_status_aluno' aluno.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button
+                                    type="submit"
+                                    class="btn-alternar-status"
+                                    title="Clique para alterar status para {% if aluno.status == 'ativo' %}Inativo{% else %}Ativo{% endif %}"
+                                    aria-label="Status atual: {{ aluno.get_status_display }}. Clique para alterar."
+                                >
+                                    {% if aluno.status == 'ativo' %}
+                                        <span class="badge-status badge-status-ativo">
+                                            <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>Ativo
+                                        </span>
+                                    {% else %}
+                                        <span class="badge-status badge-status-inativo">
+                                            <i class="bi bi-slash-circle me-1" aria-hidden="true"></i>Inativo
+                                        </span>
+                                    {% endif %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <!-- Responsável apenas visualiza o status -->
+                            {% if aluno.status == 'ativo' %}
+                                <span class="badge-status badge-status-ativo" aria-label="Status: Ativo">
+                                    <i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>Ativo
+                                </span>
+                            {% else %}
+                                <span class="badge-status badge-status-inativo" aria-label="Status: Inativo">
+                                    <i class="bi bi-slash-circle me-1" aria-hidden="true"></i>Inativo
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        {% else %}
+            <!-- Estado Vazio / Sem alunos ou nenhum resultado na busca -->
+            <div class="text-center py-4 px-2">
+                <i class="bi bi-person-x text-muted fs-1 d-block mb-2" aria-hidden="true"></i>
+                {% if termo_busca %}
+                    <p class="text-muted mb-2">Nenhum aluno encontrado para "<strong>{{ termo_busca }}</strong>".</p>
+                    <a href="{% url 'lista_alunos' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Limpar filtro de busca
+                    </a>
+                {% elif is_educador %}
+                    <p class="text-muted mb-0">Nenhum aluno cadastrado no momento.</p>
+                    <p class="small text-muted">Utilize o botão "Novo Cadastro" abaixo para iniciar.</p>
+                {% else %}
+                    <p class="text-muted mb-0">Nenhum aluno está vinculado a esta conta no momento.</p>
+                    <p class="small text-muted">Entre em contato com o educador responsável pelo projeto.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Botões de Ação Inferiores -->
+    <div class="d-grid gap-2">
+        {% if is_educador %}
+            <!-- Botão Novo Cadastro (Exclusivo do Educador) -->
+            <a href="{% url 'cadastro_aluno' %}" class="btn btn-oficial-primario" aria-label="Cadastrar novo aluno">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                <span>Novo Cadastro</span>
+            </a>
+        {% endif %}
+
+        <!-- Botão Voltar / Sair -->
+        <a href="{% url 'logout' %}" class="btn btn-oficial-secundario" aria-label="Sair do sistema">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            <span>Voltar / Sair</span>
+        </a>
+    </div>
+</section>
+{% endblock %}
