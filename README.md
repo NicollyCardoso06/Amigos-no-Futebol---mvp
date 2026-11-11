@@ -140,9 +140,3 @@ Informe o e-mail, nome e senha para o educador (ex: `educador@amigosnofutebol.or
 python manage.py runserver
 ```
 
-Acesse no navegador:
-- **Aplicação Principal:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-- **Painel Administrativo:** [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
-
----
-
