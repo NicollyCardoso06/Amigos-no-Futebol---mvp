@@ -10,3 +10,6 @@ __pycache__/
 *.py[cod].coverage
 
 .coverage
+
+# Arquivos enviados pelos usuários (fotos e imagens)
+media/

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Publicar foto</h2>
+        <p class="text-muted">
+            Compartilhe os registros das atividades com os responsáveis.
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.foto.id_for_label }}" class="form-label">
+                        {{ form.foto.label }}
+                    </label>
+                    {{ form.foto }}
+                    {% for error in form.foto.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.legenda.id_for_label }}" class="form-label">
+                        {{ form.legenda.label }}
+                    </label>
+                    {{ form.legenda }}
+                    {% for error in form.legenda.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Publicar foto
+                </button>
+
+                <a href="{% url 'galeria_atividades' %}" class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

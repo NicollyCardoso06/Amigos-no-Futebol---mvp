@@ -53,11 +53,26 @@
             {% for aluno in alunos %}
                 <article class="card-aluno">
                     <div class="info-aluno-bloco">
-                        <div class="avatar-aluno" aria-hidden="true">
-                            <i class="bi bi-person-fill"></i>
+                        <div class="avatar-aluno">
+                            {% if aluno.foto %}
+                                <img
+                                    src="{% url 'foto_aluno' aluno.id %}"
+                                    alt="Foto de {{ aluno.nome }}"
+                                    class="foto-perfil-aluno"
+                                >
+                            {% else %}
+                                <i class="bi bi-person-fill" aria-hidden="true"></i>
+                            {% endif %}
                         </div>
                         <div>
-                            <h3 class="nome-aluno">{{ aluno.nome }}</h3>
+                            <h3 class="nome-aluno">
+                                <a
+                                    href="{% url 'perfil_aluno' aluno.id %}"
+                                    class="text-decoration-none text-reset"
+                                    aria-label="Abrir perfil de {{ aluno.nome }}">
+                                    {{ aluno.nome }}
+                                </a>
+                            </h3>
                             {% if is_educador %}
                                 <p class="responsavel-aluno">
                                     <i class="bi bi-person-heart" aria-hidden="true"></i>
@@ -136,7 +151,7 @@
             <!-- Botão Novo Cadastro (Exclusivo do Educador) -->
             <a href="{% url 'cadastro_aluno' %}" class="btn btn-oficial-primario" aria-label="Cadastrar novo aluno">
                 <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                <span>Novo Cadastro</span>
+                <span>Novo Cadastro de Aluno</span>
             </a>
         {% endif %}
 

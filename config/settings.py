@@ -119,6 +119,10 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Arquivos enviados pelos usuários
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Configurações de autenticação e redirecionamento
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'lista_alunos'

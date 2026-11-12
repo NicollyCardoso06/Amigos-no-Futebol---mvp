@@ -7,7 +7,7 @@ e formatação para Bootstrap 5.3 com requisitos de acessibilidade.
 from datetime import date
 from django import forms
 from django.contrib.auth import authenticate
-from .models import Aluno, Usuario
+from .models import Aluno, Usuario, FotoAtividade
 
 
 class LoginForm(forms.Form):
@@ -219,3 +219,89 @@ class ResponsavelForm(forms.ModelForm):
             usuario.save()
 
         return usuario
+
+class AlunoPerfilForm(forms.ModelForm):
+    class Meta:
+        model = Aluno
+        fields = [
+            'endereco',
+            'telefone',
+            'escolaridade',
+            'escola',
+            'lembrete',
+            'observacoes',
+            'foto',
+        ]
+
+        widgets = {
+            'endereco': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Endereço completo'
+            }),
+            'telefone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Telefone para contato'
+            }),
+            'escolaridade': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ex.: Ensino Fundamental'
+            }),
+            'escola': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nome da escola'
+            }),
+            'lembrete': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3
+            }),
+            'observacoes': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4
+            }),
+            'foto': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
+        }
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.ImageField):
+    widget = MultipleFileInput
+
+    def clean(self, data, initial=None):
+        if not data:
+            return super().clean(data, initial)
+
+        if isinstance(data, (list, tuple)):
+            return [
+                super(MultipleImageField, self).clean(item, initial)
+                for item in data
+            ]
+
+        return [super().clean(data, initial)]
+
+
+class FotoAtividadeForm(forms.Form):
+    foto = MultipleImageField(
+        label='Selecionar fotos',
+        widget=MultipleFileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*',
+            'required': 'required',
+        })
+    )
+
+    legenda = forms.CharField(
+        label='Legenda',
+        required=False,
+        max_length=255,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Descreva a atividade (opcional)',
+        })
+    )
+
+    

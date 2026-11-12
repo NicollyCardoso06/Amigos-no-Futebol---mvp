@@ -1,0 +1,85 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Perfil do aluno</h2>
+            <p class="text-muted">{{ aluno.nome }}</p>
+        </div>
+
+        <a href="{% url 'lista_alunos' %}" class="btn btn-outline-secondary">
+            Voltar
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h5 class="mb-3">Informações pessoais</h5>
+
+            <p><strong>Nome:</strong> {{ aluno.nome }}</p>
+            <p><strong>Data de nascimento:</strong> {{ aluno.data_nascimento|date:"d/m/Y" }}</p>
+            <p><strong>Responsável:</strong> {{ aluno.responsavel.nome }}</p>
+
+            <hr>
+
+            <h5 class="mb-3">Informações complementares</h5>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">
+                            {{ field.label }}
+                        </label>
+
+                        
+                {% if field.name == 'foto' %}
+                    {% if aluno.foto %}
+                        <div class="mb-3">
+                            <img
+                                src="{% url 'foto_aluno' aluno.id %}"
+                                alt="Foto de {{ aluno.nome }}"
+                                style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; display: block;"
+                            >
+                         </div>
+                    {% endif %}
+
+                    <label for="{{ field.id_for_label }}" class="btn btn-outline-primary">
+                        <i class="bi bi-camera"></i>
+                        {% if aluno.foto %}
+                            Alterar foto
+                        {% else %}
+                            Adicionar foto
+                        {% endif %}
+                    </label>
+
+                    <div class="d-none">
+                        {{ field }}
+                    </div>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+
+                        {% if field.errors %}
+                            <div class="text-danger small">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">
+                    Salvar informações
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

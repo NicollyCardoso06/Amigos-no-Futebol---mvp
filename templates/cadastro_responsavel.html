@@ -47,7 +47,17 @@
             <label for="id_senha" class="form-label">
                 Senha inicial <span class="text-danger">*</span>
             </label>
-            {{ form.senha }}
+            <div class="input-group">
+                {{ form.senha }}
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    data-toggle-password="id_senha"
+                    aria-label="Mostrar senha"
+                    aria-pressed="false">
+                    <i class="bi bi-eye" aria-hidden="true"></i>
+                </button>
+            </div>
             {% for error in form.senha.errors %}
                 <div class="text-danger small mt-1" role="alert">{{ error }}</div>
             {% endfor %}
@@ -57,7 +67,19 @@
             <label for="id_confirmar_senha" class="form-label">
                 Confirmar senha <span class="text-danger">*</span>
             </label>
-            {{ form.confirmar_senha }}
+            
+            <div class="input-group">
+                {{ form.confirmar_senha }}
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    data-toggle-password="id_confirmar_senha"
+                    aria-label="Mostrar senha"
+                    aria-pressed="false">
+                    <i class="bi bi-eye" aria-hidden="true"></i>
+                </button>
+            </div>
+
             {% for error in form.confirmar_senha.errors %}
                 <div class="text-danger small mt-1" role="alert">{{ error }}</div>
             {% endfor %}

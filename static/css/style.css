@@ -49,8 +49,8 @@ select:focus-visible {
 }
 
 .logo-header {
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--cor-dourado);
@@ -98,8 +98,8 @@ select:focus-visible {
 }
 
 .logo-destaque {
-    width: 130px;
-    height: 130px;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid var(--cor-dourado);
@@ -296,6 +296,7 @@ select:focus-visible {
     width: 44px;
     height: 44px;
     border-radius: 50%;
+    overflow: hidden;
     background-color: #e3ebf7;
     color: var(--cor-primaria-azul);
     display: inline-flex;
@@ -379,4 +380,12 @@ select:focus-visible {
 .rodape-projeto a {
     color: var(--cor-dourado);
     text-decoration: none;
+}
+
+.foto-perfil-aluno {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
 }
