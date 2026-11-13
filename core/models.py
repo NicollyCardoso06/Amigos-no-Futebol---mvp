@@ -131,6 +131,41 @@ class Aluno(models.Model):
         verbose_name='Responsável familiar'
     )
 
+    endereco = models.CharField(
+        'Endereço',
+        max_length=255,
+        blank=True
+    )
+    telefone = models.CharField(
+        'Telefone',
+        max_length=20,
+        blank=True
+    )
+    escolaridade = models.CharField(
+        'Escolaridade',
+        max_length=100,
+        blank=True
+    )
+    escola = models.CharField(
+        'Escola',
+        max_length=150,
+        blank=True
+    )
+    lembrete = models.TextField(
+        'Lembretes',
+        blank=True
+    )
+    observacoes = models.TextField(
+        'Observações individuais',
+        blank=True
+    )
+    foto = models.ImageField(
+        'Foto do aluno',
+        upload_to='alunos/fotos/',
+        blank=True,
+        null=True
+    )
+
     class Meta:
         verbose_name = 'Aluno'
         verbose_name_plural = 'Alunos'
@@ -161,3 +196,33 @@ class Aluno(models.Model):
     @property
     def is_ativo(self):
         return self.status == 'ativo'
+
+class FotoAtividade(models.Model):
+    foto = models.ImageField(
+        'Foto da atividade',
+        upload_to='atividades/fotos/'
+    )
+    legenda = models.CharField(
+        'Legenda',
+        max_length=255,
+        blank=True
+    )
+    data_publicacao = models.DateTimeField(
+        'Data de publicação',
+        auto_now_add=True
+    )
+    educador = models.ForeignKey(
+        Usuario,
+        on_delete=models.PROTECT,
+        related_name='fotos_publicadas',
+        limit_choices_to={'perfil': 'educador'},
+        verbose_name='Educador responsável'
+    )
+
+    class Meta:
+        verbose_name = 'Foto da atividade'
+        verbose_name_plural = 'Fotos das atividades'
+        ordering = ['-data_publicacao']
+
+    def __str__(self):
+        return self.legenda or f'Foto da atividade - {self.data_publicacao:%d/%m/%Y}'

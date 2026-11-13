@@ -7,6 +7,7 @@ Utiliza exclusivamente variáveis de ambiente do sistema operacional (os.environ
 import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,6 +26,12 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 hosts_env = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 ALLOWED_HOSTS = [h.strip() for h in hosts_env.split(',') if h.strip()]
 
+CSRF_TRUSTED_ORIGINS = [
+    origem.strip()
+    for origem in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origem.strip()
+]
+
 # Aplicações instaladas
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -39,6 +46,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -69,14 +77,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Banco de dados exclusivo: PostgreSQL
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'amigos_no_futebol'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=not DEBUG,
+    )
 }
 
 # Modelo de Usuário Customizado com autenticação por e-mail
@@ -118,6 +123,19 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+
+# Arquivos enviados pelos usuários
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Configurações de autenticação e redirecionamento
 LOGIN_URL = 'login'

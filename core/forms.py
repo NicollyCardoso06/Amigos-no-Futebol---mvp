@@ -7,7 +7,7 @@ e formatação para Bootstrap 5.3 com requisitos de acessibilidade.
 from datetime import date
 from django import forms
 from django.contrib.auth import authenticate
-from .models import Aluno, Usuario
+from .models import Aluno, Usuario, FotoAtividade
 
 
 class LoginForm(forms.Form):
@@ -147,3 +147,161 @@ class AlunoForm(forms.ModelForm):
                     'atende exclusivamente crianças e adolescentes de 6 a 17 anos.'
                 )
         return data_nascimento
+
+
+class ResponsavelForm(forms.ModelForm):
+    """
+    Formulário para criação de contas de responsáveis pelo educador.
+    """
+
+    senha = forms.CharField(
+        label='Senha inicial',
+        min_length=8,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Digite uma senha com pelo menos 8 caracteres',
+            'autocomplete': 'new-password',
+        }),
+        error_messages={
+            'min_length': 'A senha deve ter pelo menos 8 caracteres.',
+        }
+    )
+
+    confirmar_senha = forms.CharField(
+        label='Confirmar senha',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Digite a senha novamente',
+            'autocomplete': 'new-password',
+        })
+    )
+
+    class Meta:
+        model = Usuario
+        fields = ['nome', 'email']
+        labels = {
+            'nome': 'Nome completo',
+            'email': 'E-mail',
+        }
+        widgets = {
+            'nome': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Digite o nome completo',
+                'autocomplete': 'name',
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Digite o e-mail',
+                'autocomplete': 'email',
+            }),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        senha = cleaned_data.get('senha')
+        confirmar_senha = cleaned_data.get('confirmar_senha')
+
+        if senha and confirmar_senha and senha != confirmar_senha:
+            self.add_error(
+                'confirmar_senha',
+                'As senhas informadas não coincidem.'
+            )
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+        usuario.perfil = 'responsavel'
+        usuario.is_active = True
+        usuario.set_password(self.cleaned_data['senha'])
+
+        if commit:
+            usuario.save()
+
+        return usuario
+
+class AlunoPerfilForm(forms.ModelForm):
+    class Meta:
+        model = Aluno
+        fields = [
+            'endereco',
+            'telefone',
+            'escolaridade',
+            'escola',
+            'lembrete',
+            'observacoes',
+            'foto',
+        ]
+
+        widgets = {
+            'endereco': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Endereço completo'
+            }),
+            'telefone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Telefone para contato'
+            }),
+            'escolaridade': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ex.: Ensino Fundamental'
+            }),
+            'escola': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nome da escola'
+            }),
+            'lembrete': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3
+            }),
+            'observacoes': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4
+            }),
+            'foto': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
+        }
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.ImageField):
+    widget = MultipleFileInput
+
+    def clean(self, data, initial=None):
+        if not data:
+            return super().clean(data, initial)
+
+        if isinstance(data, (list, tuple)):
+            return [
+                super(MultipleImageField, self).clean(item, initial)
+                for item in data
+            ]
+
+        return [super().clean(data, initial)]
+
+
+class FotoAtividadeForm(forms.Form):
+    foto = MultipleImageField(
+        label='Selecionar fotos',
+        widget=MultipleFileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*',
+            'required': 'required',
+        })
+    )
+
+    legenda = forms.CharField(
+        label='Legenda',
+        required=False,
+        max_length=255,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Descreva a atividade (opcional)',
+        })
+    )
+
+    

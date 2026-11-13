@@ -5,7 +5,7 @@ Permite ao educador cadastrar e gerenciar contas de responsáveis e alunos.
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Usuario, Aluno
+from .models import Usuario, Aluno, FotoAtividade
 
 
 def educador_admin_has_permission(request):
@@ -71,3 +71,16 @@ class AlunoAdmin(admin.ModelAdmin):
         if db_field.name == "responsavel":
             kwargs["queryset"] = Usuario.objects.filter(perfil='responsavel', is_active=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+@admin.register(FotoAtividade)
+class FotoAtividadeAdmin(admin.ModelAdmin):
+    list_display = ('legenda', 'educador', 'data_publicacao')
+    list_filter = ('data_publicacao',)
+    search_fields = ('legenda', 'educador__nome')
+    ordering = ('-data_publicacao',)
+    readonly_fields = ('data_publicacao',)
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.educador = request.user
+        super().save_model(request, obj, form, change)
